@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz | Student Task Dashboard{% endblock %}
+
+{% block content %}
+  <div class="d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row gap-2 mb-3">
+    <div>
+      <h1 class="h4 mb-1">Quiz</h1>
+      <div class="text-muted">Answer all questions and submit once.</div>
+    </div>
+    <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Back to dashboard</a>
+  </div>
+
+  {% if not quiz %}
+    <div class="alert alert-info">No quiz assigned yet.</div>
+  {% else %}
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start gap-2">
+          <div>
+            <div class="text-muted small">Assigned quiz</div>
+            <h2 class="h5 mb-0">{{ quiz.title }}</h2>
+          </div>
+          <div class="text-muted small">{{ quiz.created_at|date:"M d, Y H:i" }}</div>
+        </div>
+      </div>
+    </div>
+
+    {% if submitted %}
+      <div class="alert alert-success">
+        <strong>You scored {{ score }}/10</strong>
+        <div class="small text-muted">Correct answers are not shown.</div>
+      </div>
+    {% endif %}
+
+    {% if incomplete %}
+      <div class="alert alert-warning">
+        This quiz is not ready yet (it must have exactly 5 questions). Please ask your teacher to fix it.
+      </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'quiz_submit' %}">
+      {% csrf_token %}
+
+      {% for q in questions %}
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <div class="fw-semibold mb-2">Q{{ forloop.counter }}. {{ q.text }}</div>
+
+            <div class="form-check mb-1">
+              <input class="form-check-input" type="radio" name="q_{{ q.id }}" id="q{{ q.id }}_A" value="A" {% if submitted %}disabled{% endif %} required />
+              <label class="form-check-label" for="q{{ q.id }}_A"><strong>A.</strong> {{ q.option_a }}</label>
+            </div>
+            <div class="form-check mb-1">
+              <input class="form-check-input" type="radio" name="q_{{ q.id }}" id="q{{ q.id }}_B" value="B" {% if submitted %}disabled{% endif %} required />
+              <label class="form-check-label" for="q{{ q.id }}_B"><strong>B.</strong> {{ q.option_b }}</label>
+            </div>
+            <div class="form-check mb-1">
+              <input class="form-check-input" type="radio" name="q_{{ q.id }}" id="q{{ q.id }}_C" value="C" {% if submitted %}disabled{% endif %} required />
+              <label class="form-check-label" for="q{{ q.id }}_C"><strong>C.</strong> {{ q.option_c }}</label>
+            </div>
+            <div class="form-check mb-1">
+              <input class="form-check-input" type="radio" name="q_{{ q.id }}" id="q{{ q.id }}_D" value="D" {% if submitted %}disabled{% endif %} required />
+              <label class="form-check-label" for="q{{ q.id }}_D"><strong>D.</strong> {{ q.option_d }}</label>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+
+      {% if not submitted and not incomplete %}
+        <button class="btn btn-primary" type="submit">Submit quiz</button>
+      {% else %}
+        <button class="btn btn-secondary" type="button" disabled>Quiz submitted</button>
+      {% endif %}
+    </form>
+  {% endif %}
+{% endblock %}
+

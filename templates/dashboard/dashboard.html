@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard | Student Task Dashboard{% endblock %}
+
+{% block head %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-3">
+    <div>
+      <h1 class="h4 mb-1">Welcome, {{ user.username }}.</h1>
+      <div class="text-muted">Track your daily tasks and progress.</div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-lg-7">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h2 class="h5 mb-0">Your tasks</h2>
+            <span class="badge text-bg-secondary">{{ tasks|length }}</span>
+          </div>
+
+          {% if not tasks %}
+            <div class="text-muted">No tasks assigned yet.</div>
+          {% else %}
+            <div class="list-group">
+              {% for task in tasks %}
+                <label class="list-group-item d-flex gap-3 align-items-start">
+                  <input
+                    class="form-check-input mt-1 task-toggle"
+                    type="checkbox"
+                    {% if task.is_completed %}checked{% endif %}
+                    data-task-id="{{ task.id }}"
+                    aria-label="Mark task complete"
+                  />
+                  <div class="flex-grow-1">
+                    <div class="d-flex flex-column flex-md-row justify-content-between gap-1">
+                      <div class="fw-semibold" style="white-space: pre-wrap;">
+                        {{ task.text }}
+                      </div>
+                      <div class="text-muted small">
+                        {{ task.date }}
+                      </div>
+                    </div>
+                    <div class="text-muted small">Assigned: {{ task.created_at|date:"M d, Y H:i" }}</div>
+                    {% if task.images.all %}
+                      <div class="d-flex flex-wrap gap-2 mt-2">
+                        {% for img in task.images.all %}
+                          <a href="{{ img.image.url }}" target="_blank" rel="noreferrer">
+                            <img
+                              src="{{ img.image.url }}"
+                              alt="Task image"
+                              class="rounded border"
+                              style="width: 84px; height: 84px; object-fit: cover;"
+                              loading="lazy"
+                            />
+                          </a>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </label>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Quiz</h2>
+          {% if quiz %}
+            <div class="d-flex justify-content-between align-items-start gap-2">
+              <div>
+                <div class="fw-semibold">{{ quiz.title }}</div>
+                <div class="text-muted small">Assigned: {{ quiz.created_at|date:"M d, Y H:i" }}</div>
+              </div>
+              {% if quiz_submitted %}
+                <span class="badge text-bg-success align-self-start">Submitted</span>
+              {% else %}
+                <span class="badge text-bg-warning align-self-start">Pending</span>
+              {% endif %}
+            </div>
+            {% if quiz_submitted %}
+              <div class="mt-2">Score: <strong>{{ quiz_score }}/10</strong></div>
+            {% endif %}
+            <a class="btn btn-outline-primary btn-sm mt-3" href="{% url 'quiz_page' %}">Open quiz</a>
+          {% else %}
+            <div class="text-muted">No quiz assigned yet.</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Homework</h2>
+          {% if homework %}
+            <div class="d-flex justify-content-between align-items-start gap-2">
+              <div class="text-muted small">Assigned: {{ homework.created_at|date:"M d, Y H:i" }}</div>
+              {% if homework_submission %}
+                <span class="badge text-bg-success align-self-start">Submitted</span>
+              {% else %}
+                <span class="badge text-bg-warning align-self-start">Pending</span>
+              {% endif %}
+            </div>
+            <div class="mt-2" style="white-space: pre-wrap;">{{ homework.text|truncatechars:180 }}</div>
+            <a class="btn btn-outline-primary btn-sm mt-3" href="{% url 'homework_page' %}">Open homework</a>
+          {% else %}
+            <div class="text-muted">No homework assigned yet.</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Progress</h2>
+          <div class="ratio ratio-1x1">
+            <canvas id="progressChart"></canvas>
+          </div>
+          <div class="d-flex justify-content-center gap-3 mt-3">
+            <div class="text-center">
+              <div class="text-muted small">Completed</div>
+              <div class="h5 mb-0" id="completedCount">{{ completed_count }}</div>
+            </div>
+            <div class="text-center">
+              <div class="text-muted small">Pending</div>
+              <div class="h5 mb-0" id="pendingCount">{{ pending_count }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="h5 mb-2">Message from teacher</h2>
+          {% if latest_message %}
+            <div class="text-muted small mb-2">
+              {{ latest_message.created_at|date:"M d, Y H:i" }}
+            </div>
+            <div class="teacher-message">{{ latest_message.text }}</div>
+          {% else %}
+            <div class="text-muted">No message yet.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.DASHBOARD = {
+      completedCount: {{ completed_count|default:0 }},
+      pendingCount: {{ pending_count|default:0 }},
+    };
+  </script>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}
+

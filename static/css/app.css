@@ -1,0 +1,12 @@
+.teacher-message {
+  white-space: pre-wrap;
+}
+
+.list-group-item {
+  cursor: pointer;
+}
+
+.list-group-item .form-check-input {
+  cursor: pointer;
+}
+

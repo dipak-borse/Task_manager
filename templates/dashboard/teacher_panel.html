@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Panel | Student Task Dashboard{% endblock %}
+
+{% block content %}
+  <div class="d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row gap-2 mb-3">
+    <div>
+      <h1 class="h4 mb-1">Teacher Panel</h1>
+      <div class="text-muted">Assign tasks, create quizzes, and add homework.</div>
+    </div>
+    <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Back to dashboard</a>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Add new task</h2>
+
+          <form method="post" class="vstack gap-3" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create_task" />
+
+            <div>
+              <label class="form-label" for="{{ task_form.user.id_for_label }}">Student</label>
+              {{ task_form.user }}
+              {% if task_form.user.errors %}<div class="text-danger small">{{ task_form.user.errors }}</div>{% endif %}
+            </div>
+
+            <div>
+              <label class="form-label" for="{{ task_form.date.id_for_label }}">Date</label>
+              {{ task_form.date }}
+              {% if task_form.date.errors %}<div class="text-danger small">{{ task_form.date.errors }}</div>{% endif %}
+            </div>
+
+            <div>
+              <label class="form-label" for="{{ task_form.text.id_for_label }}">Task text</label>
+              {{ task_form.text }}
+              {% if task_form.text.errors %}<div class="text-danger small">{{ task_form.text.errors }}</div>{% endif %}
+            </div>
+
+            <button class="btn btn-primary" type="submit">Create task</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Set personal message</h2>
+          <p class="text-muted small mb-3">
+            This creates a new message. Students will see their latest one.
+          </p>
+
+          <form method="post" class="vstack gap-3" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="action" value="set_message" />
+
+            <div>
+              <label class="form-label" for="{{ message_form.user.id_for_label }}">Student</label>
+              {{ message_form.user }}
+              {% if message_form.user.errors %}<div class="text-danger small">{{ message_form.user.errors }}</div>{% endif %}
+            </div>
+
+            <div>
+              <label class="form-label" for="{{ message_form.text.id_for_label }}">Message</label>
+              {{ message_form.text }}
+              {% if message_form.text.errors %}<div class="text-danger small">{{ message_form.text.errors }}</div>{% endif %}
+            </div>
+
+            <button class="btn btn-success" type="submit">Send message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Create quiz (5 questions)</h2>
+          <form method="post" class="vstack gap-3" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create_quiz" />
+
+            <div class="row g-3">
+              <div class="col-12 col-lg-6">
+                <label class="form-label" for="{{ quiz_form.user.id_for_label }}">Student</label>
+                {{ quiz_form.user }}
+                {% if quiz_form.user.errors %}<div class="text-danger small">{{ quiz_form.user.errors }}</div>{% endif %}
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label" for="{{ quiz_form.title.id_for_label }}">Quiz title</label>
+                {{ quiz_form.title }}
+                {% if quiz_form.title.errors %}<div class="text-danger small">{{ quiz_form.title.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            {{ quiz_questions_formset.management_form }}
+            <div class="row g-3">
+              {% for form in quiz_questions_formset %}
+                <div class="col-12 col-lg-6">
+                  <div class="border rounded p-3 h-100">
+                    <div class="fw-semibold mb-2">Question {{ forloop.counter }}</div>
+
+                    <div class="mb-2">
+                      <label class="form-label" for="{{ form.text.id_for_label }}">Question</label>
+                      {{ form.text }}
+                      {% if form.text.errors %}<div class="text-danger small">{{ form.text.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="row g-2">
+                      <div class="col-12 col-md-6">
+                        <label class="form-label" for="{{ form.option_a.id_for_label }}">Option A</label>
+                        {{ form.option_a }}
+                        {% if form.option_a.errors %}<div class="text-danger small">{{ form.option_a.errors }}</div>{% endif %}
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label" for="{{ form.option_b.id_for_label }}">Option B</label>
+                        {{ form.option_b }}
+                        {% if form.option_b.errors %}<div class="text-danger small">{{ form.option_b.errors }}</div>{% endif %}
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label" for="{{ form.option_c.id_for_label }}">Option C</label>
+                        {{ form.option_c }}
+                        {% if form.option_c.errors %}<div class="text-danger small">{{ form.option_c.errors }}</div>{% endif %}
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label" for="{{ form.option_d.id_for_label }}">Option D</label>
+                        {{ form.option_d }}
+                        {% if form.option_d.errors %}<div class="text-danger small">{{ form.option_d.errors }}</div>{% endif %}
+                      </div>
+                    </div>
+
+                    <div class="mt-2">
+                      <label class="form-label" for="{{ form.correct_answer.id_for_label }}">Correct answer</label>
+                      {{ form.correct_answer }}
+                      {% if form.correct_answer.errors %}<div class="text-danger small">{{ form.correct_answer.errors }}</div>{% endif %}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+
+            <button class="btn btn-primary" type="submit">Create quiz</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Add homework</h2>
+          <form method="post" class="vstack gap-3" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create_homework" />
+
+            <div>
+              <label class="form-label" for="{{ homework_form.user.id_for_label }}">Student</label>
+              {{ homework_form.user }}
+              {% if homework_form.user.errors %}<div class="text-danger small">{{ homework_form.user.errors }}</div>{% endif %}
+            </div>
+
+            <div>
+              <label class="form-label" for="{{ homework_form.text.id_for_label }}">Homework text</label>
+              {{ homework_form.text }}
+              {% if homework_form.text.errors %}<div class="text-danger small">{{ homework_form.text.errors }}</div>{% endif %}
+            </div>
+
+            <button class="btn btn-primary" type="submit">Assign homework</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Recent activity</h2>
+          <div class="row g-3">
+            <div class="col-12 col-lg-6">
+              <div class="border rounded p-3 h-100">
+                <div class="fw-semibold mb-2">Recent tasks</div>
+                {% if recent_tasks %}
+                  <ul class="list-unstyled mb-0">
+                    {% for task in recent_tasks %}
+                      <li class="mb-2">
+                        <div class="small text-muted">{{ task.created_at|date:"M d, Y H:i" }} • {{ task.user.username }} • {{ task.date }}</div>
+                        <div>{{ task.text }}</div>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <div class="text-muted small">No tasks yet.</div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-12 col-lg-6">
+              <div class="border rounded p-3 h-100">
+                <div class="fw-semibold mb-2">Recent messages</div>
+                {% if recent_messages %}
+                  <ul class="list-unstyled mb-0">
+                    {% for msg in recent_messages %}
+                      <li class="mb-2">
+                        <div class="small text-muted">{{ msg.created_at|date:"M d, Y H:i" }} • {{ msg.user.username }}</div>
+                        <div>{{ msg.text }}</div>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <div class="text-muted small">No messages yet.</div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-12 col-lg-6">
+              <div class="border rounded p-3 h-100">
+                <div class="fw-semibold mb-2">Recent quizzes</div>
+                {% if recent_quizzes %}
+                  <ul class="list-unstyled mb-0">
+                    {% for q in recent_quizzes %}
+                      <li class="mb-2">
+                        <div class="small text-muted">{{ q.created_at|date:"M d, Y H:i" }} • {{ q.user.username }}</div>
+                        <div>{{ q.title }}</div>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <div class="text-muted small">No quizzes yet.</div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-12 col-lg-6">
+              <div class="border rounded p-3 h-100">
+                <div class="fw-semibold mb-2">Recent homework</div>
+                {% if recent_homeworks %}
+                  <ul class="list-unstyled mb-0">
+                    {% for hw in recent_homeworks %}
+                      <li class="mb-2">
+                        <div class="small text-muted">{{ hw.created_at|date:"M d, Y H:i" }} • {{ hw.user.username }}</div>
+                        <div style="white-space: pre-wrap;">{{ hw.text|truncatechars:120 }}</div>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <div class="text-muted small">No homework yet.</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="border rounded p-3">
+                <div class="fw-semibold mb-2">Student quiz submissions</div>
+                {% if recent_quiz_results %}
+                  <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                      <thead>
+                        <tr>
+                          <th>Student</th>
+                          <th>Quiz</th>
+                          <th>Score</th>
+                          <th>Details</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for r in recent_quiz_results %}
+                          <tr>
+                            <td>{{ r.user.username }}</td>
+                            <td>{{ r.quiz.title }}</td>
+                            <td><span class="badge text-bg-primary">{{ r.score }}/10</span></td>
+                            <td>
+                              <details>
+                                <summary class="small text-muted">View answers</summary>
+                                <ul class="list-unstyled mt-2 mb-0">
+                                  {% for a in r.answers %}
+                                    <li class="mb-2">
+                                      <div class="small text-muted">{{ a.question_text }}</div>
+                                      <div class="small">
+                                        Selected: <strong>{{ a.selected_option }}</strong>
+                                        • Correct: <strong>{{ a.correct_answer }}</strong>
+                                      </div>
+                                    </li>
+                                  {% endfor %}
+                                </ul>
+                              </details>
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                {% else %}
+                  <div class="text-muted small">No quiz submissions yet.</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="border rounded p-3">
+                <div class="fw-semibold mb-2">Homework submissions</div>
+                {% if recent_homework_submissions %}
+                  <ul class="list-unstyled mb-0">
+                    {% for s in recent_homework_submissions %}
+                      <li class="mb-3">
+                        <div class="small text-muted">
+                          {{ s.submitted_at|date:"M d, Y H:i" }} • {{ s.user.username }}
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                          {% for img in images %}
+                          {% if img %}
+                            <a href="{{ img.url }}" target="_blank" rel="noreferrer">
+                              <img src="{{ img.url }}"
+                                   alt="Homework image"
+                                   class="rounded border"
+                                   style="width: 96px; height: 96px; object-fit: cover;"
+                                   loading="lazy" />
+                            </a>
+                          {% endif %}
+                        {% endfor %}
+                        </div>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <div class="text-muted small">No homework submissions yet.</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

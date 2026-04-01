@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Homework | Student Task Dashboard{% endblock %}
+
+{% block content %}
+  <div class="d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row gap-2 mb-3">
+    <div>
+      <h1 class="h4 mb-1">Homework</h1>
+      <div class="text-muted">Read the homework and upload up to 5 images.</div>
+    </div>
+    <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Back to dashboard</a>
+  </div>
+
+  {% if not homework %}
+    <div class="alert alert-info">No homework assigned yet.</div>
+  {% else %}
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="text-muted small mb-2">Assigned: {{ homework.created_at|date:"M d, Y H:i" }}</div>
+        <div style="white-space: pre-wrap;">{{ homework.text }}</div>
+      </div>
+    </div>
+
+    {% if submission %}
+      <div class="alert alert-success">
+        <strong>Submitted</strong>
+        <div class="small text-muted">Submitted at {{ submission.submitted_at|date:"M d, Y H:i" }}</div>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="h6 mb-3">Your uploaded images</h2>
+          <div class="d-flex flex-wrap gap-2">
+            {% for img in images %}
+              {% if img %}
+                <a href="{{ img.url }}" target="_blank" rel="noreferrer">
+                  <img src="{{ img.url }}"
+                       alt="Homework image"
+                       class="rounded border"
+                       style="width: 96px; height: 96px; object-fit: cover;"
+                       loading="lazy" />
+                </a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="h6 mb-3">Upload submission</h2>
+          <form method="post" enctype="multipart/form-data" class="vstack gap-3" novalidate>
+            {% csrf_token %}
+
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="{{ form.image1.id_for_label }}">Image 1</label>
+                {{ form.image1 }}
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="{{ form.image2.id_for_label }}">Image 2</label>
+                {{ form.image2 }}
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="{{ form.image3.id_for_label }}">Image 3</label>
+                {{ form.image3 }}
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="{{ form.image4.id_for_label }}">Image 4</label>
+                {{ form.image4 }}
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="{{ form.image5.id_for_label }}">Image 5</label>
+                {{ form.image5 }}
+              </div>
+            </div>
+
+            <button class="btn btn-primary" type="submit">Submit homework</button>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+{% endblock %}
+
