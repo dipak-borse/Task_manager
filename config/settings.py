@@ -23,12 +23,15 @@ SECRET_KEY = 'django-insecure-@2!2l@(kxkoah0tik&it63wchqhi1o!v&58(mro_ym*ss3&!0y
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+import dj_database_url
 import os
 
-import dj_database_url
-
 DATABASES = {
-    'default': dj_database_url.parse("postgresql://task_db_qfj8_user:y9xBdtgVPxr7sXzavauWEarMT29oRIKY@dpg-d7ch44lckfvc738af6dg-a.virginia-postgres.render.com/task_db_qfj8")
+    'default': dj_database_url.parse(
+        os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
