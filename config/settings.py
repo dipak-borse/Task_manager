@@ -25,11 +25,11 @@ SECRET_KEY = 'django-insecure-@2!2l@(kxkoah0tik&it63wchqhi1o!v&58(mro_ym*ss3&!0y
 DEBUG = True
 import os
 
-    import dj_database_url
+import dj_database_url
 
-    DATABASES = {
-        'default': dj_database_url.parse("postgresql://task_db_qfj8_user:y9xBdtgVPxr7sXzavauWEarMT29oRIKY@dpg-d7ch44lckfvc738af6dg-a.virginia-postgres.render.com/task_db_qfj8")
-    }
+DATABASES = {
+    'default': dj_database_url.parse("postgresql://task_db_qfj8_user:y9xBdtgVPxr7sXzavauWEarMT29oRIKY@dpg-d7ch44lckfvc738af6dg-a.virginia-postgres.render.com/task_db_qfj8")
+}
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 #gaurav = learnschool
