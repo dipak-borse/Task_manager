@@ -28,12 +28,11 @@ import os
 
 DATABASES = {
     'default': dj_database_url.parse(
-        os.environ.get("DATABASE_URL"),
+        os.environ.get("DATABASE_URL") or "postgresql://task_db_qfj8_user:y9xBdtgVPxr7sXzavauWEarMT29oRIKY@dpg-d7ch44lckfvc738af6dg-a.virginia-postgres.render.com/task_db_qfj8",
         conn_max_age=600,
         ssl_require=True
     )
 }
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 #gaurav = learnschool
 
