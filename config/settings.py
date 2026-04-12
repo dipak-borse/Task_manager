@@ -23,16 +23,18 @@ SECRET_KEY = 'django-insecure-@2!2l@(kxkoah0tik&it63wchqhi1o!v&58(mro_ym*ss3&!0y
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-import dj_database_url
 import os
+
+import dj_database_url
 
 DATABASES = {
     'default': dj_database_url.parse(
-        os.environ.get("DATABASE_URL") or "postgresql://task_db_qfj8_user:y9xBdtgVPxr7sXzavauWEarMT29oRIKY@dpg-d7ch44lckfvc738af6dg-a.virginia-postgres.render.com/task_db_qfj8",
+        "postgresql://task_db_qfj8_user:y9xBdtgVPxr7sXzavauWEarMT29oRIKY@dpg-d7ch44lckfvc738af6dg-a.virginia-postgres.render.com/task_db_qfj8",
         conn_max_age=600,
         ssl_require=True
     )
 }
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 #gaurav = learnschool
 
@@ -42,7 +44,31 @@ CSRF_TRUSTED_ORIGINS = ['https://*.ngrok-free.dev']
 LOGOUT_REDIRECT_URL = '/login/'
 # Application definition
 
+JAZZMIN_SETTINGS = {
+    "site_title": "Task Manager",
+    "site_header": "Dipak Admin 😈",
+    "site_brand": "Task Manager",
+    "welcome_sign": "Welcome Dipak 🚀",
+    "copyright": "Dipak Sama",
+    
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
+    ],
+
+    "show_sidebar": True,
+    "navigation_expanded": True,
+
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+    },
+
+    "theme": "darkly",  # try: darkly, flatly, cosmo, cyborg
+}
+
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -85,13 +111,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
